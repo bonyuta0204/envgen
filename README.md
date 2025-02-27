@@ -26,27 +26,57 @@ Download the latest binary from the [Releases](https://github.com/bonyuta0204/en
 ## Usage
 
 ```bash
-envgen [options]
+envgen [global options] command [command options]
 ```
 
-### Options
+### Global Options
 
-- `-template`: Path to the template file (default: `.env.template`)
-- `-output`: Path to the output file (default: `.env`)
-- `-region`: AWS region (overrides AWS_REGION environment variable)
-- `-verbose`: Enable verbose output
+- `--template, -t`: Path to the template file (default: `.env.template`)
+- `--output, -o`: Path to the output file (default: `.env`)
+- `--region, -r`: AWS region (overrides AWS_REGION environment variable)
+- `--verbose, -V`: Enable verbose output
+- `--help, -h`: Show help
+- `--version, -v`: Print the version
 
-### Example
+### Commands
+
+#### Generate (default)
+
+Generates a `.env` file by retrieving values from AWS SSM Parameter Store.
 
 ```bash
 # Generate .env file using default template (.env.template)
 envgen
 
 # Specify custom template and output files
-envgen -template config/.env.template -output .env.production
+envgen -t config/.env.template -o .env.production
 
 # Specify AWS region
-envgen -region us-west-2
+envgen -r us-west-2
+```
+
+#### Validate
+
+Validates the template file without generating the `.env` file.
+
+```bash
+# Validate the default template
+envgen validate
+
+# Validate a specific template
+envgen validate -t config/.env.template
+```
+
+#### List
+
+Lists all SSM parameters referenced in the template file.
+
+```bash
+# List parameters in the default template
+envgen list
+
+# List parameters in a specific template
+envgen list -t config/.env.template
 ```
 
 ## Template Format

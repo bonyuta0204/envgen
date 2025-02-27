@@ -50,14 +50,42 @@ Run `envgen` to generate your `.env` file:
 ./envgen
 
 # Specify a custom template and output file
-./envgen -template ./config/.env.template -output ./config/.env
+./envgen -t ./config/.env.template -o ./config/.env
 
 # Specify AWS region
-./envgen -region us-west-2
+./envgen -r us-west-2
 
 # Enable verbose output
-./envgen -verbose
+./envgen -V
 ```
+
+## Additional Commands
+
+### Validating Templates
+
+You can validate your template without generating a `.env` file:
+
+```bash
+# Validate the default template
+./envgen validate
+
+# Validate a specific template
+./envgen validate -t ./config/.env.template
+```
+
+### Listing SSM Parameters
+
+You can list all SSM parameters referenced in your template:
+
+```bash
+# List parameters in the default template
+./envgen list
+
+# List parameters in a specific template
+./envgen list -t ./config/.env.template
+```
+
+This is useful for auditing which parameters your application depends on.
 
 ## Verifying the Generated .env File
 
@@ -102,7 +130,7 @@ jobs:
           chmod +x envgen
       
       - name: Generate .env file
-        run: ./envgen -verbose
+        run: ./envgen -V
       
       # Continue with your deployment steps
 ```
@@ -115,7 +143,7 @@ If you encounter AWS credentials issues:
 
 1. Ensure your AWS credentials are properly configured
 2. Check that your IAM user/role has the necessary permissions
-3. Try setting the AWS region explicitly with the `-region` flag
+3. Try setting the AWS region explicitly with the `-r` flag
 
 ### Parameter Not Found
 
@@ -130,7 +158,7 @@ If a parameter is not found:
 For other issues, run with verbose output enabled:
 
 ```bash
-./envgen -verbose
+./envgen -V
 ```
 
 This will provide more information about what's happening during execution.

@@ -88,3 +88,28 @@ func (p *Processor) processLine(line string, ssmRegex *regexp.Regexp) (string, e
 
 	return result.String(), nil
 }
+
+// ExtractParameters extracts all SSM parameter names from a template
+func ExtractParameters(templateContent string) ([]string, error) {
+	// Regular expression to match SSM parameter placeholders: {{SSM:/path/to/param}}
+	ssmRegex := regexp.MustCompile(`{{SSM:([^}]+)}}`)
+	
+	// Find all SSM parameter placeholders
+	matches := ssmRegex.FindAllStringSubmatch(templateContent, -1)
+	
+	// Extract parameter names
+	paramSet := make(map[string]struct{})
+	for _, match := range matches {
+		if len(match) >= 2 {
+			paramSet[match[1]] = struct{}{}
+		}
+	}
+	
+	// Convert to slice
+	params := make([]string, 0, len(paramSet))
+	for param := range paramSet {
+		params = append(params, param)
+	}
+	
+	return params, nil
+}
