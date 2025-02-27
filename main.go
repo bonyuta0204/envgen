@@ -17,12 +17,15 @@ const (
 	defaultOutputFile   = ".env"
 )
 
+// version is set during build by GoReleaser
+var version = "dev"
+
 func main() {
 	app := &cli.App{
 		Name:        "envgen",
 		Usage:       "Generate .env files from AWS SSM Parameter Store",
 		Description: "A tool that generates .env files by retrieving values from AWS SSM Parameter Store based on a template file",
-		Version:     "1.0.0",
+		Version:     version,
 		Compiled:    time.Now(),
 		Authors: []*cli.Author{
 			{
