@@ -2,6 +2,7 @@ package template
 
 import (
 	"errors"
+	"sort"
 	"testing"
 )
 
@@ -107,4 +108,58 @@ func TestProcess(t *testing.T) {
 			t.Errorf("Process() expected error, got nil")
 		}
 	})
+}
+
+func TestExtractParameters(t *testing.T) {
+	tests := []struct {
+		name     string
+		template string
+		expected []string
+	}{
+		{
+			name:     "No placeholders",
+			template: "KEY=value\nANOTHER=value2",
+			expected: []string{},
+		},
+		{
+			name:     "With placeholders",
+			template: "DB_HOST={{SSM:/myapp/db_host}}\nDB_PASSWORD={{SSM:/myapp/db_password}}",
+			expected: []string{"/myapp/db_host", "/myapp/db_password"},
+		},
+		{
+			name:     "With duplicate placeholders",
+			template: "DB_HOST={{SSM:/myapp/db_host}}\nDB_HOST_REPLICA={{SSM:/myapp/db_host}}",
+			expected: []string{"/myapp/db_host"},
+		},
+		{
+			name:     "Mixed content",
+			template: "APP_ENV=dev\nDB_HOST={{SSM:/myapp/db_host}}\nAPI_KEY={{SSM:/myapp/api_key}}",
+			expected: []string{"/myapp/db_host", "/myapp/api_key"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := ExtractParameters(tt.template)
+			if err != nil {
+				t.Errorf("ExtractParameters() error = %v", err)
+				return
+			}
+			
+			// Sort both slices for comparison
+			sort.Strings(result)
+			sort.Strings(tt.expected)
+			
+			if len(result) != len(tt.expected) {
+				t.Errorf("ExtractParameters() returned %d parameters, want %d", len(result), len(tt.expected))
+				return
+			}
+			
+			for i, param := range result {
+				if param != tt.expected[i] {
+					t.Errorf("ExtractParameters()[%d] = %v, want %v", i, param, tt.expected[i])
+				}
+			}
+		})
+	}
 }

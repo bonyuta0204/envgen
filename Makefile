@@ -1,4 +1,4 @@
-.PHONY: build test clean install
+.PHONY: build test clean install list validate
 
 # Binary name
 BINARY_NAME=envgen
@@ -42,3 +42,9 @@ install:
 
 deps:
 	$(GOGET) -v -t ./...
+
+list:
+	./$(BINARY_NAME) list
+
+validate:
+	./$(BINARY_NAME) validate
